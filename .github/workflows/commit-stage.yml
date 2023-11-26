@@ -35,7 +35,6 @@ jobs:
           password: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Publish container image
-        run: docker push ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:${{ env.VERSION }}
         run:  |
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/author-book-ui:${{ env.VERSION }}
           docker push ${{ env.REGISTRY }}/${{ env.IMAGE_OWNER }}/book-review-ui:${{ env.VERSION }}       
