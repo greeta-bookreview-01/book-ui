@@ -2,11 +2,13 @@ import React from 'react'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import Keycloak from 'keycloak-js'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import PrivateRoute from './components/misc/PrivateRoute';
 import Customer from './components/customer/Customer'
 import Author from './components/staff/Author'
 import Book from './components/staff/Book'
 import Navbar from './components/misc/Navbar'
 import AuthorBookWizard from './components/wizard/AuthorBookWizard'
+import { Dimmer, Header, Icon } from 'semantic-ui-react'
 import { config } from './Constants'
 
 function App() {
@@ -46,14 +48,14 @@ function App() {
       <Router>
         <Navbar />
         <Routes>
-          <Route path='/' element={<Customer />} />
-          <Route path='/customer' element={<Customer />} />
-          <Route path='/author' element={<Author />} />
-          <Route path='/book' element={<Book />} />
-          <Route path='/wizard' element={<AuthorBookWizard />} />
+          <Route path='/' element={<PrivateRoute><Customer /></PrivateRoute>} />
+          <Route path='/customer' element={<PrivateRoute><Customer /></PrivateRoute>} />
+          <Route path='/author' element={<PrivateRoute><Author /></PrivateRoute>} />
+          <Route path='/book' element={<PrivateRoute><Book /></PrivateRoute>} />
+          <Route path='/wizard' element={<PrivateRoute><AuthorBookWizard /></PrivateRoute>} />
         </Routes>
       </Router>
-    </ReactKeycloakProvider>      
+    </ReactKeycloakProvider>
   )
 }
 

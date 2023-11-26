@@ -3,6 +3,7 @@ import { Container, Grid } from '@material-ui/core'
 import BookForm from './BookForm'
 import BookTable from './BookTable'
 import { bookReviewApi } from '../misc/BookReviewApi'
+import { getKeycloak } from '../../components/misc/Helpers'
 
 class Staff extends Component {
   formInitialState = {
@@ -30,6 +31,8 @@ class Staff extends Component {
   }
 
   getBooks = () => {
+    const  keycloak = getKeycloak()
+
     const query = `{
       getBooks {
         id
@@ -38,7 +41,7 @@ class Staff extends Component {
       }
     }`
 
-    bookReviewApi.call(query)
+    bookReviewApi.call(keycloak, query)
       .then(response => this.setState({ books: response.data.data.getBooks }))
       .catch(error => console.log(error))
   }
@@ -49,6 +52,8 @@ class Staff extends Component {
     }
 
     const { id, isbn, title } = this.state.form
+
+    const  keycloak = getKeycloak()
 
     let query
     if (id) {
@@ -65,7 +70,7 @@ class Staff extends Component {
       }`
     }
 
-    bookReviewApi.call(query)
+    bookReviewApi.call(keycloak, query)
       .then(() => {
         this.clearForm()
         this.getBooks()
@@ -74,13 +79,15 @@ class Staff extends Component {
   }
 
   deleteBook = (id) => {
+    const  keycloak = getKeycloak()
+
     const query = `mutation {
       deleteBook(bookId: "${id}") {
         id
       }
     }`
 
-    bookReviewApi.call(query)
+    bookReviewApi.call(keycloak, query)
       .then(() => {
         this.getBooks()
       })

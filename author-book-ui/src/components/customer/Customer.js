@@ -4,6 +4,7 @@ import BookList from './BookList'
 import ReviewModal from './ReviewModal'
 import { authorBookApi } from '../misc/AuthorBookApi'
 import { bookReviewApi } from '../misc/BookReviewApi'
+import { getKeycloak } from '../misc/Helpers'
 
 class Customer extends Component {
   formInitialState = {
@@ -44,6 +45,8 @@ class Customer extends Component {
   getBooks = () => {
     this.setState({ isLoading: true })
 
+    const  keycloak = getKeycloak()
+
     const query = `{
       getBooks {
         id
@@ -66,12 +69,15 @@ class Customer extends Component {
       }
     }`
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(response => this.setState({ isLoading: false, books: response.data.data.getBooks }))
       .catch(error => console.log(error))
   }
 
   getBookById = (id) => {
+
+    const  keycloak = getKeycloak()
+
     const query = `{
       getBookById(bookId: ${id}) {
         id
@@ -94,7 +100,7 @@ class Customer extends Component {
       }
     }`
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(response => this.setState({ book: response.data.data.getBookById }))
       .catch(error => console.log(error))
   }
@@ -107,13 +113,15 @@ class Customer extends Component {
     const bookId = this.state.book.bookReview.id
     const { reviewer, comment, rating } = this.state.modal.form
 
+    const  keycloak = getKeycloak()
+
     const query = `mutation {
       addBookReview(bookId: "${bookId}", reviewInput: {reviewer: "${reviewer}", comment: "${comment}", rating: ${rating}}) {
         id
       }
     }`
 
-    bookReviewApi.call(query)
+    bookReviewApi.call(keycloak, query)
       .then(() => {
         this.getBookById(this.state.book.id)
         this.getBooks()

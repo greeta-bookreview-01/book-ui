@@ -3,6 +3,7 @@ import { Container } from '@material-ui/core'
 import { bookReviewApi } from '../misc/BookReviewApi'
 import BookList from './BookList'
 import ReviewModal from './ReviewModal'
+import { getKeycloak } from '../../components/misc/Helpers'
 
 class Customer extends Component {
   formInitialState = {
@@ -37,6 +38,8 @@ class Customer extends Component {
   getBooks = () => {
     this.setState({ isLoading: true })
 
+    const  keycloak = getKeycloak()
+
     const query = `{
       getBooks {
         id
@@ -51,7 +54,7 @@ class Customer extends Component {
       }
     }`
 
-    bookReviewApi.call(query)
+    bookReviewApi.call(keycloak, query)
       .then(response => this.setState({ isLoading: false, books: response.data.data.getBooks }))
       .catch(error => console.log(error))
   }
@@ -63,6 +66,8 @@ class Customer extends Component {
 
     const { id } = this.state.book
     const { reviewer, comment, rating } = this.state.modal.form
+
+    const  keycloak = getKeycloak()
 
     const query = `mutation {
       addBookReview(bookId: "${id}", reviewInput: {reviewer: "${reviewer}", comment: "${comment}", rating: ${rating}}) {
@@ -78,7 +83,7 @@ class Customer extends Component {
       }
     }`
 
-    bookReviewApi.call(query)
+    bookReviewApi.call(keycloak, query)
       .then(response => {
         this.setState({ book: response.data.data.addBookReview })
         this.getBooks()

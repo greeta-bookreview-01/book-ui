@@ -3,6 +3,7 @@ import { Container, Grid, Segment, Header, Divider } from 'semantic-ui-react'
 import { authorBookApi } from '../misc/AuthorBookApi'
 import BookTable from './BookTable'
 import BookForm from './BookForm'
+import { getKeycloak } from '../misc/Helpers'
 
 class Book extends Component {
   formInitialState = {
@@ -59,6 +60,8 @@ class Book extends Component {
     authorDropdown.isFetching = true
     this.setState({ authorDropdown })
 
+    const  keycloak = getKeycloak()
+
     const query = `{
       getAuthors {
         id
@@ -66,7 +69,7 @@ class Book extends Component {
       }
     }`
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(response => {
         const authors = response.data.data.getAuthors
         const options = authors.map(author => {
@@ -85,6 +88,8 @@ class Book extends Component {
   }
 
   getBooks = () => {
+    const  keycloak = getKeycloak()
+
     const query = `{
       getBooks {
         id
@@ -98,7 +103,7 @@ class Book extends Component {
       }
     }`
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(response => this.setState({ books: response.data.data.getBooks }))
       .catch(error => console.log(error))
   }
@@ -109,6 +114,7 @@ class Book extends Component {
     }
 
     const { id, isbn, authorId, title, year } = this.state.form
+    const  keycloak = getKeycloak()
     let query
     if (id) {
       query = `mutation {
@@ -124,7 +130,7 @@ class Book extends Component {
       }`
     }
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(() => {
         this.clearForm()
         this.getBooks()
@@ -133,13 +139,14 @@ class Book extends Component {
   }
 
   deleteBook = (id) => {
+    const  keycloak = getKeycloak()
     const query = `mutation {
       deleteBook(bookId: ${id}) {
         id
       }
     }`
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(() => {
         this.getBooks()
       })

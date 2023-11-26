@@ -1,11 +1,17 @@
 import axios from 'axios'
+import { bearerAuth } from './Helpers'
 
 export const bookReviewApi = {
   call
 }
 
-function call(query) {
-  return instance.post('graphql', { query })
+function call(keycloak, query) {
+  return instance.post('graphql', JSON.stringify({ query: query }), {
+    headers: {
+      'Content-type': 'application/json',
+      'Authorization': bearerAuth(keycloak)
+    }
+  })
 }
 
 // -- Axios

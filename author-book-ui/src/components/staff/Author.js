@@ -3,6 +3,7 @@ import { Container, Grid, Segment, Header, Divider } from 'semantic-ui-react'
 import { authorBookApi } from '../misc/AuthorBookApi'
 import AuthorTable from './AuthorTable'
 import AuthorForm from './AuthorForm'
+import { getKeycloak } from '../misc/Helpers'
 
 class Author extends Component {
   formInitialState = {
@@ -38,7 +39,9 @@ class Author extends Component {
       }
     }`
 
-    authorBookApi.call(query)
+    const  keycloak = getKeycloak()
+
+    authorBookApi.call(keycloak, query)
       .then(response => this.setState({ authors: response.data.data.getAuthors }))
       .catch(error => console.log(error))
   }
@@ -49,6 +52,7 @@ class Author extends Component {
     }
 
     const { id, name } = this.state.form
+    const  keycloak = getKeycloak()
     let query
     if (id) {
       query = `mutation {
@@ -63,7 +67,7 @@ class Author extends Component {
         }
       }`
     }
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(() => {
         this.clearForm()
         this.getAuthors()
@@ -72,13 +76,14 @@ class Author extends Component {
   }
 
   deleteAuthor = (id) => {
+    const  keycloak = getKeycloak()
     const query = `mutation {
       deleteAuthor(authorId: ${id}) {
         id
       }
     }`
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(() => {
         this.getAuthors()
       })

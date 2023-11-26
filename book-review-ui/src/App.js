@@ -2,6 +2,7 @@ import React from 'react'
 import { ReactKeycloakProvider } from '@react-keycloak/web'
 import Keycloak from 'keycloak-js'
 import { BrowserRouter as Router, Routes, Route } from 'react-router-dom'
+import PrivateRoute from './components/misc/PrivateRoute';
 import Navbar from './components/misc/Navbar'
 import Customer from './components/customer/Customer'
 import Book from './components/staff/Book'
@@ -24,14 +25,7 @@ function App() {
   }  
 
   const loadingComponent = (
-    <Dimmer inverted active={true} page>
-      <Header style={{ color: '#4d4d4d' }} as='h2' icon inverted>
-        <Icon loading name='cog' />
-        <Header.Content>Keycloak is loading
-          <Header.Subheader style={{ color: '#4d4d4d' }}>or running authorization code flow with PKCE</Header.Subheader>
-        </Header.Content>
-      </Header>
-    </Dimmer>
+    <div></div>
   )
 
   return (
@@ -44,9 +38,9 @@ function App() {
     <Router>
       <Navbar />
       <Routes>
-        <Route path='/' element={<Customer />} />
-        <Route path='/customer' element={<Customer />} />
-        <Route path='/book' element={<Book />} />
+        <Route path='/' element={<PrivateRoute><Customer /></PrivateRoute>} />
+        <Route path='/customer' element={<PrivateRoute><Customer /></PrivateRoute>} />
+        <Route path='/book' element={<PrivateRoute><Book /></PrivateRoute>} />
       </Routes>
     </Router>
     </ReactKeycloakProvider>

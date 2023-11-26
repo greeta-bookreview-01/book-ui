@@ -8,6 +8,7 @@ import CompleteStep from './CompleteStep'
 import openLibraryApi from '../misc/OpenLibraryApi'
 import { authorBookApi } from '../misc/AuthorBookApi'
 import { bookReviewApi } from '../misc/BookReviewApi'
+import { getKeycloak } from '../misc/Helpers'
 
 class AuthorBookWizard extends Component {
   state = {
@@ -109,13 +110,14 @@ class AuthorBookWizard extends Component {
   }
 
   getAuthorByName = (authorName) => {
+    const  keycloak = getKeycloak()
     const query = `{
       getAuthorByName(authorName: "${authorName}") {
         id
       }
     }`
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(response => {
         if (response.data.data.getAuthorByName.length > 0) {
           let authorId = response.data.data.getAuthorByName[0].id
@@ -165,6 +167,8 @@ class AuthorBookWizard extends Component {
     authorDropdown.isFetching = true
     this.setState({ authorDropdown })
 
+    const  keycloak = getKeycloak()
+
     const query = `{
       getAuthors {
         id
@@ -172,7 +176,7 @@ class AuthorBookWizard extends Component {
       }
     }`
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(response => {
         const authors = response.data.data.getAuthors
         const options = authors.map(author => {
@@ -198,13 +202,15 @@ class AuthorBookWizard extends Component {
     this.setState({ isLoading: true })
     const { authorName } = this.state
 
+    const  keycloak = getKeycloak()
+
     const query = `mutation {
       createAuthor ( authorInput: { name:"${authorName}" } ) {
         id
       }
     }`
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then((response) => {
         this.fillAuthorDropdown()
         const authorId = response.data.data.createAuthor.id
@@ -221,13 +227,15 @@ class AuthorBookWizard extends Component {
     const { isbn, authorId, title, year, bookReviewApiChecked } = this.state
 
     if (bookReviewApiChecked === 'checked') {
+      const  keycloak = getKeycloak()
+
       const query = `mutation {
         createBook(bookInput: {isbn: "${isbn}", title: "${title}"}) {
           id
         }
       }`
 
-      bookReviewApi.call(query)
+      bookReviewApi.call(keycloak, query)
         .then((response) => {
           const { id } = response.data.data.createBook
           console.log(`Book created successfully in book-review-api, id: ${id}`)
@@ -235,13 +243,15 @@ class AuthorBookWizard extends Component {
         .catch(error => console.log(error))
     }
 
+    const  keycloak = getKeycloak()
+
     const query = `mutation {
       createBook(bookInput: {isbn: "${isbn}", title: "${title}", authorId: ${authorId}, year: ${year}}) {
         id
       }
     }`
 
-    authorBookApi.call(query)
+    authorBookApi.call(keycloak, query)
       .then(() => {
         this.setState({bookCreated: true})
       })

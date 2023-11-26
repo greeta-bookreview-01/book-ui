@@ -1,13 +1,16 @@
 import axios from 'axios'
+import { bearerAuth } from './Helpers'
 
 export const authorBookApi = {
   call
 }
 
-function call(token, query) {
-  return instance.post('graphql', { 
-    query,
-    headers: { 'Authorization': bearerAuth(token) }
+function call(keycloak, query) {
+  return instance.post('graphql', JSON.stringify({ query: query }), {
+    headers: {
+      'Content-Type': 'application/json',
+      'Authorization': bearerAuth(keycloak)
+    }
   })
 }
 
